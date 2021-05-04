@@ -1,0 +1,23 @@
+---
+- name: Server Installation
+  hosts: web
+  become: true
+  remote_user: ubuntu
+  gather_facts: true
+
+  pre_tasks:
+    - name: APT | Update & Upgrade
+      apt:
+        upgrade: dist
+        update_cache: yes
+
+  tasks:
+  - include_vars:
+      file: vars.yaml
+
+  roles:
+    - tools
+    - nginx
+    - node
+    - php
+    - mysql

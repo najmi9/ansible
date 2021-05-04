@@ -1,0 +1,33 @@
+---
+- name: Nginx | Ubuntu ppa
+  apt_repository:
+    repo: ppa:nginx/stable
+    state: present
+
+- name: Nginx | Install
+  apt:
+    name: nginx
+    state: present
+
+- name: Nginx | Remove default Configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+    force: true
+
+- name: Nginx | Add Configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/conf.d/nginx.conf
+
+- name: "Nginx |Create Dirctory  /var/www/{{ domain }}"
+  file: state=directory path="/var/www/{{ domain }}"
+
+- name: Nginx | Create a index.php file.
+  template:
+    src: index.php
+    dest: "/var/www/{{ domain }}/index.php"
+    force: true
+  notify: 
+    - nginx reload
+    - nginx restart

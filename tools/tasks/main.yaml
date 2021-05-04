@@ -1,0 +1,20 @@
+---
+- name: "Utils | Timezone -> {{ timezone }} "
+  community.general.timezone:
+    name: "{{ timezone }}"
+- name: "Utils | Locale -> {{ locale }}"
+  community.general.locale_gen:
+    name: "{{ locale }}"
+    state: present
+- name: Utils | Requirements
+  apt:
+    name:
+      - curl
+      - git
+      - vim
+      - redis
+      - make
+      - certbot
+      - fail2ban
+    state: present
+

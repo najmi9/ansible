@@ -1,0 +1,66 @@
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/{{ domain }};
+
+    index index.php;
+
+    server_name  {{ domain }};
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ ^/index\.php(/|$) {
+        include snippets/fastcgi-php.conf;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        fastcgi_pass unix:/run/php/php{{ php_version }}-fpm.sock;
+    }
+
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    location = /robots.text {
+        log_not_found off;
+        access_log off;
+    }
+
+    # mERCURE
+    location /.well-known/mercure/ {
+        proxy_pass http://localhost:3000/.well-known/mercure;
+        access_log off;
+        proxy_read_timeout 24h;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
+    # .files
+    location ~ /\.(?!well-known) {
+        deny all;
+    }
+
+    # assets, media
+    location ~* \.(?:css(\.map)?|js(\.map)?|jpe?g|png|gif|ico|cur|heic|webp|tiff?|mp3|m4a|aac|ogg|midi?|wav|mp4|mov|webm|mpe?g|avi|ogv|flv|wmv)$ {
+        expires    7d;
+        access_log off;
+    }
+
+    # svg, fonts
+    location ~* \.(?:svgz?|ttf|ttc|otf|eot|woff2?)$ {
+        add_header Access-Control-Allow-Origin "*";
+        expires    7d;
+        access_log off;
+    }
+
+    # gzip
+    gzip            on;
+    gzip_vary       on;
+    gzip_proxied    any;
+    gzip_comp_level 6;
+    gzip_types      text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml;
+}
+

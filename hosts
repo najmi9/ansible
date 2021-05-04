@@ -1,0 +1,2 @@
+[web]
+35.181.50.142  ansible_connection=ssh  ansible_user=ubuntu  ansible_ssh_private_key_file="~/Desktop/secrets/shop.pem"

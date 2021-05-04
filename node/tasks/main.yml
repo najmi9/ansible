@@ -1,0 +1,31 @@
+---
+- name: "NodeJS | NodeJS {{ node_version }} Ubuntu repository"
+  get_url:
+    url: "https://deb.nodesource.com/setup_{{ node_version }}.x"
+    dest: ~/nodejs
+    mode: 0755
+
+- name: Nodejs| Package
+  command: ~/nodejs
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: "Yarn| GPG"
+  become: true
+  apt_key:
+    url: "https://dl.yarnpkg.com/debian/pubkey.gpg"
+    state: present
+
+- name: Yarn| Package
+  copy:
+    dest: /etc/apt/sources.list.d/yarnsource.list
+    content: deb https://dl.yarnpkg.com/debian/ stable main
+
+- name: Yarn & nodejs | Install
+  become: True
+  apt:
+    name: 
+      - nodejs
+      - yarn
+    update_cache: true
+    state: present

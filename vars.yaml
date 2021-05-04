@@ -1,0 +1,8 @@
+
+---
+php_version: 7.4
+node_version: 14
+mysql_db: mydomain
+mysql_user: mydomain
+mysql_password: root
+mysql_root_password: root

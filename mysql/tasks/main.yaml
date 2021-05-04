@@ -1,0 +1,52 @@
+- name: Install MySQL
+  become: true
+  apt:
+    name: 
+      - mysql-server
+      - mysql-client
+      - python3-mysqldb
+
+# Set a password for the root user because by default is empty
+- name: MySQL | Set root password
+  mysql_user:
+    check_implicit_admin: true
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    user: root
+    host: localhost
+    password: "{{ mysql_root_password }}"
+    
+# Remove anynomous user
+- name: MySQL | Remove anom
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    user: ""
+    state: absent
+
+# Remove the database test created by default
+- name: MySQL | Remove default DB
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    db: test
+    state: absent
+
+# Create database for my domain
+- name: "MySQL | Create {{ mysql_db }}"
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    db: "{{ mysql_db }}"
+    state: present
+
+# Create user for my database
+- name: "MySQL | Create user {{ mysql_user }}"
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    host: localhost
+    priv: "{{ mysql_db }}.*:ALL"
+    state: present
